@@ -19,7 +19,7 @@ Nodo inicio,ult;
 		Nodo nuevo=new Nodo();
 		nuevo.valor=x;
 		nuevo.sig=null;
-		if(ult==null) 
+		if(ult!=null) 
 			ult.sig=nuevo;
 		ult=nuevo;
 		if(inicio==null)

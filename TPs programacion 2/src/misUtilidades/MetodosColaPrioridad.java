@@ -1,5 +1,7 @@
 package misUtilidades;
 import misImplementaciones.estatico.ColaPrioridad;
+import misApis.ColaPrioridadTDA;
+import misApis.ABBTDA;
 public class MetodosColaPrioridad {
 	public static void pasarColaPrioridad(ColaPrioridad origen,ColaPrioridad destino) {//pasa una cola con prioridad a otra
 		while(!origen.colaVacia()) {
@@ -29,4 +31,5 @@ public class MetodosColaPrioridad {
 		}
 	}
 
-}
+	
+	}
