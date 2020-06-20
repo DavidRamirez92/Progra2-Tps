@@ -7,15 +7,6 @@ import misImplementaciones.dinamico.ColaPrioridad;
 
 public class MetodosArbol {
 	
-	public boolean fibonacci(int valor) {
-		if(valor<2)
-			return true;
-		else {
-			return (fibonacci(valor-1)&&fibonacci(valor-2));
-			
-	}
-	}
-	
 	
 	public void vaciarArbol(ABBTDA arbol) {
 		if(!arbol.arbolVacio()) {
