@@ -1,32 +1,34 @@
 package misApilcaciones;
 import misApis.ABBTDA;
 import misApis.ColaPrioridadTDA;
+import misApis.ConjuntoTDA;
+import misApis.GrafoTDA;
+import misApis.PilaTDA;
 import misImplementaciones.dinamico.ABB;
+import misImplementaciones.dinamico.ColaPrioridad;
+import misImplementaciones.dinamico.Grafo;
+import misImplementaciones.dinamico.Pila;
+import misUtilidades.ExamenFinal;
 import misUtilidades.MetodosArbol;
-import misUtilidades.MetodosColaPrioridad;
+import misUtilidades.MetodosArbol2;
+import misUtilidades.MetodosGrafo;
+import misUtilidades.MetodosPila;
 public class App {
 
 	public static void main(String[] args) {
-		MetodosArbol m=new MetodosArbol();
-		ABBTDA arbol=new ABB();
-		arbol.inicializarABB();
-		arbol.agregar(5);
-		arbol.agregar (3);
-		arbol.agregar (2);
-		arbol.agregar (7);
-		arbol.agregar (8);
-		arbol.agregar (9);
-		arbol.agregar (10);
-		ColaPrioridadTDA cola=m.colaDeArbol(arbol);
-		while(!cola.colaVacia()) {
-			System.out.println(cola.primero()+"/"+cola.prioridad());
-			cola.desacolar();
-			
-		}
-
-		
-
+		ConjuntoTDA vertices;
+		boolean arista;
+		GrafoTDA grafo=new Grafo();
+		int elemento;
+		grafo.inicializarGrafo();
+		grafo.agregarVertice(1);
+		grafo.agregarVertice(2);
+		grafo.agregarArista(1, 2,5);
+		grafo.eliminarVertice(1);
+		arista=grafo.existeArista(1, 2);
+		System.out.println(arista);
 
 	}
-
 }
+
+

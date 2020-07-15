@@ -15,6 +15,7 @@ public class Pila implements PilaTDA {
 
 	public void apilar(int x) {
 		Nodo nuevo=new Nodo();
+		nuevo.v=x;
 		nuevo.sig=primero;
 		primero=nuevo;
 

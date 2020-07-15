@@ -5,138 +5,159 @@ import misApis.GrafoTDA;
 
 public class Grafo implements GrafoTDA {
 
-	class NodoV {
-		int vertice;
-		NodoArista iniArista;
+	class NodoV{//vertice
+		int et;//etiqueta
 		NodoV sigV;
+		NodoA inicio;
 	}
-
-	class NodoArista {
+	
+	class NodoA{//arista
 		int peso;
-		NodoV destino;
-		NodoArista sigArista;
+		NodoA sigA;
+		NodoV dest;
 	}
 	
 	NodoV inicio;
-	
+
+	@Override
 	public void inicializarGrafo() {
+		// TODO Auto-generated method stub
 		inicio = null;
 	}
-//precond, el vertice no debe existir
-	public void agregarVertice(int v) {
-		NodoV nuevo = new NodoV();
-		nuevo.vertice = v;
-		nuevo.iniArista = null;
-		nuevo.sigV = inicio;
-		inicio = nuevo;
+
+	private NodoV posVertice(int v) {
+		NodoV actual = inicio;
+		
+		while (actual.et != v)
+			actual = actual.sigV;
+		
+		return actual;			
+	}
+	// precond. los vertices existen
+	@Override
+	public void agregarArista(int v1, int v2, int p) {
+		
+		NodoV verticeOrigen = posVertice(v1);
+		NodoV verticeDestino = posVertice(v2);
+		 NodoA actual = verticeOrigen.inicio;
+		 while (actual!=null && actual.dest!=verticeDestino)
+			 actual = actual.sigA;
+		 if (actual==null) { // no existe arista
+			 NodoA nuevo = new NodoA();
+			 
+			 nuevo.peso = p;
+			 nuevo.dest = verticeDestino;
+			 
+			 nuevo.sigA = verticeOrigen.inicio;
+			 verticeOrigen.inicio = nuevo;		 
+		 }		
 	}
 
-	public void eliminarVertice(int v) {
-		ConjuntoTDA verticesOrigen=this.vertices();
-		verticesOrigen.sacar(v);
-		int vo;
-		while(!verticesOrigen.conjuntoVacio()) {
-			vo=verticesOrigen.elegir();
-			verticesOrigen.sacar(vo);
-			if(this.existeArista(vo,v))
-				this.eliminarArista(vo,v);
+	@Override // precond : la arista existe
+	public void eliminarArista(int v1, int v2) {
+		// TODO Auto-generated method stub
+		
+		NodoV verticeOrigen = posVertice(v1);
+		NodoV verticeDestino = posVertice(v2);
+		
+		// busco el lugar de la arista
+		NodoA ant = null , actual = verticeOrigen.inicio;
+		while (actual.dest != verticeDestino) {
+			ant = actual;
+			actual = actual.sigA;
 		}
-		NodoV actual = inicio, ant = null;		
-		while ( actual != null && actual.vertice != v ) {
+		
+		if (ant == null) { // si la arista es la primera de la lista
+			verticeOrigen.inicio = verticeOrigen.inicio.sigA;
+		} else {
+			ant.sigA = actual.sigA;
+		}
+
+	}
+
+	// precond. el vertice no debe existir
+	@Override
+	public void agregarVertice(int v) {
+		// TODO Auto-generated method stub
+		NodoV nuevo = new NodoV();
+		
+		nuevo.et =v;
+		nuevo.inicio = null;
+		
+		nuevo.sigV = inicio;
+		inicio = nuevo;
+
+	}
+
+	@Override
+	public void eliminarVertice(int v) {
+		NodoV actualV = inicio;
+		NodoV vertDest = posVertice(v);
+		
+		while (actualV != null) { // para todos los vértices
+			NodoA antA = null , actualA = actualV.inicio;
+			
+			while (actualA != null && actualA.dest != vertDest) {
+				antA = actualA;
+				actualA = actualA.sigA;
+			}
+			if (actualA != null) { // existe arista
+				if ( antA == null) // 1er arista
+					actualV.inicio = actualV.inicio.sigA;
+				else
+					antA.sigA = actualA.sigA;			
+			}
+			
+			actualV = actualV.sigV;
+		}
+		 
+		// elimino vertice V
+		NodoV ant = null, actual = inicio;
+		while(actual.et != v) {
 			ant = actual;
 			actual = actual.sigV;
-		}		
+		}
 		if (ant == null)
 			inicio = inicio.sigV;
 		else
 			ant.sigV = actual.sigV;
+		
+
 	}
 
+	@Override
 	public ConjuntoTDA vertices() {
-		ConjuntoTDA verts = new Conjunto();
-		verts.inicializarConjunto();
-		NodoV actualVert = inicio;		
-		while ( actualVert != null ) {
-			verts.agregar(actualVert.vertice);
-			actualVert = actualVert.sigV;
-		}		
-		return verts;
-	}//precond,los vertices existen
-	public void agregarArista(int v1, int v2, int p) {
-		NodoV verticeOrigen=posVertice(v1);
-		NodoV verticeDestino=posVertice(v2);
-		NodoArista actual=verticeOrigen.iniArista;
-		while(actual!=null&&actual.destino!=verticeDestino) 
-			actual=actual.sigArista;
-		if(actual==null) {
-			NodoArista nuevo=new NodoArista();
-			nuevo.peso=p;
-			nuevo.destino=verticeDestino;
-			nuevo.sigArista=verticeOrigen.iniArista;
-			verticeOrigen.iniArista=nuevo;
+		// TODO Auto-generated method stub
+		ConjuntoTDA resultado = new Conjunto();
+		resultado.inicializarConjunto();
+		NodoV actual = inicio;
+		while (actual != null) {
+			resultado.agregar(actual.et);
+			actual = actual.sigV;
 		}
-		
+		return resultado;
 	}
 
-	public void eliminarArista(int v1, int v2) {
-		NodoV origen = inicio ;		
-		while ( origen.vertice != v1 )
-			origen = origen.sigV;		
-
-		NodoV destino = inicio ;
-		while ( destino.vertice != v2 )
-			destino = destino.sigV;
-
-		NodoArista actualArista = origen.iniArista, antArista = null;
-		while (actualArista.destino != destino) {
-			antArista = actualArista;
-			actualArista = actualArista.sigArista;
-		}
-
-		if ( antArista == null)
-			origen.iniArista = origen.iniArista.sigArista;
-		else
-			antArista.sigArista = actualArista.sigArista;
-	}
-
+	@Override
 	public boolean existeArista(int v1, int v2) {
-		NodoV origen = inicio ;		
-		while ( origen.vertice != v1 )
-			origen = origen.sigV;		
+		NodoV verticeOrigen = posVertice(v1);
+		NodoV verticeDestino = posVertice(v2);
+		NodoA actual = verticeOrigen.inicio;
+		while (actual!=null && actual.dest!=verticeDestino)
+			 actual = actual.sigA;
 
-		NodoV destino = inicio ;
-		while ( destino.vertice != v2 )
-			destino = destino.sigV;
-
-		NodoArista actualArista = origen.iniArista;
-		while ( actualArista !=null && 
-                    actualArista.destino != destino)
-			actualArista = actualArista.sigArista;
-		
-		return  ( ( actualArista == null ) ? false : true );
-
+		return actual!=null;
 	}
 
+	@Override
 	public int pesoArista(int v1, int v2) {
-		NodoV origen = inicio ;		
-		while ( origen.vertice != v1 )
-			origen = origen.sigV;
-		
-		NodoV destino = inicio ;
-		while ( destino.vertice != v2 )
-			destino = destino.sigV;
+		NodoV verticeOrigen = posVertice(v1);
+		NodoV verticeDestino = posVertice(v2);
+		NodoA actual = verticeOrigen.inicio;
+		while (actual.dest!=verticeDestino)
+			 actual = actual.sigA;
 
-		NodoArista actualArista = origen.iniArista;
-		while ( actualArista.destino != destino)  
-			actualArista = actualArista.sigArista;
-		
-		return actualArista.peso;
-	}
-	private NodoV posVertice(int v) {
-		NodoV actual=inicio;
-		while(actual.vertice!=v)
-			actual=actual.sigV;
-		return actual;
+		return actual.peso;
 	}
 
 }

@@ -35,42 +35,35 @@ Nodo r;
 			r.der.inicializarABB();
 			r.izq.inicializarABB();
 		}
-		else if(x<raiz()) {
+		else if(x<raiz()) 
 			this.hijoIzq().agregar(x);
-		}else
+		else if(x>raiz())
 			this.hijoDer().agregar(x);
 			
 	}
 
 
 	public void eliminar(int x) {
-		if (!this.arbolVacio()) {
-			if (r.valor == x) {// encontro valor
-				if (r.der == null && r.izq == null) {// es hoja
-					r = null;// elimina valor
-				} else {// no es hoja
-					if (!r.der.arbolVacio()) {
-						int a = minimo(r.der);
-						r.valor = a;
-						r.der.eliminar(a);
-					} else {
-						int a = maximo(r.izq);
-						r.valor = a;
-						r.izq.eliminar(a);
-					}
-
-				}
-			} else {
-				if (r.valor > x) {
-					r.der.eliminar(x);
-				} else {
-					r.izq.eliminar(x);
-
-				}
+		if (r != null) { 
+			if (r.valor == x && r.izq.arbolVacio() && r.der.arbolVacio()) {
+				r = null; 
+			} 
+			else {if (r.valor == x && !r.izq.arbolVacio() ) {
+				r.valor = this.maximo(r.izq); 
+				r.izq.eliminar(r.valor);
+			} else {if (r.valor == x && r.izq.arbolVacio()) {
+				r.valor = this .minimo(r.der);
+				r.der.eliminar(r.valor); 
+			} else {if (r.valor < x){ 
+				r.der.eliminar(x);
+			} else{ 
+				r.izq.eliminar(x); 
+			} 
 			}
 
+			}
+			}
 		}
-
 	}
 
 	public boolean arbolVacio() {

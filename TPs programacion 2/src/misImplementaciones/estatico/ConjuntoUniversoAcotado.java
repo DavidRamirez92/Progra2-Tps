@@ -4,7 +4,6 @@ import misApis.ConjuntoTDA;
 
 public class ConjuntoUniversoAcotado implements ConjuntoTDA {
 	boolean[]vector;
-	int cantidad;
 
 	public void inicializarConjunto() {
 		vector = new boolean[100];
@@ -15,13 +14,14 @@ public class ConjuntoUniversoAcotado implements ConjuntoTDA {
 	public void agregar(int valor) {
 		if(!this.pertenece(valor)) {
 			vector[valor-1] = true;
-			cantidad++;
+
 		}
 	}
 
 	public void sacar(int valor) {
 		if(this.pertenece(valor)) {
 			vector[valor] = false;
+
 		}
 	}
 

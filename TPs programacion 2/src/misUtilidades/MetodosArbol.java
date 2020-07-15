@@ -2,8 +2,14 @@ package misUtilidades;
 
 import misApis.ABBTDA;
 import misApis.ColaPrioridadTDA;
+import misApis.ColaTDA;
+import misApis.ConjuntoTDA;
+import misApis.DiccionarioSimpleTDA;
 import misImplementaciones.dinamico.ABB;
+import misImplementaciones.dinamico.Cola;
 import misImplementaciones.dinamico.ColaPrioridad;
+import misImplementaciones.dinamico.Conjunto;
+import misImplementaciones.estatico.DiccionarioSimple;
 
 public class MetodosArbol {
 	
@@ -103,7 +109,7 @@ public class MetodosArbol {
 	public int profundidad(ABBTDA a, int dato) {
 		if (a.raiz() == dato) {
 			return 0;
-			// si el dato es mayot va a estar en el lado derecho del arbol
+			// si el dato es mayor va a estar en el lado derecho del arbol
 		} else if (a.raiz() < dato) {
 			return 1 + profundidad(a.hijoDer(), dato);
 		} else {
@@ -165,15 +171,15 @@ public class MetodosArbol {
 	}
 
 	public int cantHojas(ABBTDA arbol) {
-		if(arbol.arbolVacio()){
-			return 0;
-		}else{
-			if(arbol.hijoDer().arbolVacio() && arbol.hijoDer().arbolVacio()){
-				return 1;
-			}else{
-				return cantHojas(arbol.hijoDer()) + cantHojas(arbol.hijoIzq());
-			}
+		int cant=0;
+		if(!arbol.arbolVacio()) {
+			if(!arbol.hijoIzq().arbolVacio()) 
+				cant+=1+cantHojas(arbol.hijoIzq());
+			
+			if(!arbol.hijoDer().arbolVacio())
+				cant+=1+cantHojas(arbol.hijoDer());
 		}
+		return cant;
 	}
 	public boolean arbolIgual(ABBTDA arbol, ABBTDA arbol2) {
 		if(arbol.arbolVacio() && arbol2.arbolVacio()){
@@ -190,5 +196,116 @@ public class MetodosArbol {
 		}
 	}
 	
+	public DiccionarioSimpleTDA diccionarioDeArbol(ABBTDA arbol) {
+		DiccionarioSimpleTDA dic=new DiccionarioSimple();
+		dic.inicializarDiccionario();
+		if(!arbol.arbolVacio()) {
+			dic.agregar(arbol.raiz(),this.diferenciaAltura(arbol));
+			DiccionarioSimpleTDA arbolIzq=diccionarioDeArbol(arbol.hijoIzq());
+			DiccionarioSimpleTDA arbolDer=diccionarioDeArbol(arbol.hijoDer());
+			int clave;
+			ConjuntoTDA claves;
+			claves=arbolIzq.Claves();
+			while(!claves.conjuntoVacio()) {
+				clave=claves.elegir();
+				claves.sacar(clave);
+				dic.agregar(clave,arbolIzq.recuperar(clave));
+			}
+			claves=arbolDer.Claves();
+			while(!claves.conjuntoVacio()) {
+				clave=claves.elegir();
+				claves.sacar(clave);
+				dic.agregar(clave, arbolDer.recuperar(clave));
+			}
+		}
+		return dic;
+	}
 	
+	public ColaTDA colaNivelArbol(ABBTDA arbol ,int nivel) {
+		ColaTDA cola=new Cola();
+		cola.inicializarCola();
+		if(nivel==0) {
+			cola.acolar(arbol.raiz());
+		}else {
+			ColaTDA colaIzq=colaNivelArbol(arbol.hijoIzq(),nivel-1);
+			ColaTDA colaDer=colaNivelArbol(arbol.hijoDer(),nivel-1);
+			while(!colaIzq.colaVacia()) {
+				cola.acolar(colaIzq.primero());
+				colaIzq.desacolar();
+			}
+			while(!colaDer.colaVacia()) {
+				cola.acolar(colaDer.primero());
+				colaDer.desacolar();
+			}	
+		}
+		return cola;
+	}
+	public int calculoHijos(ABBTDA arbol,int nodo) {//devuelve la suma de las raices de los hijos del nodo buscado en el ABB
+		int calculo=0;
+		if(arbol.raiz()==nodo) 
+			calculo=this.sumaValores(arbol.hijoIzq())-this.sumaValores(arbol.hijoDer());
+		
+			if(nodo>arbol.raiz()) 
+				calculo=calculoHijos(arbol.hijoDer(),nodo);
+			
+			if(nodo<arbol.raiz()) 
+				calculo=calculoHijos(arbol.hijoIzq(),nodo);
+			
+		return calculo;
+	}
+	
+	public int sumaValores(ABBTDA arbol) {//devuelve la suma de todos los valores del arbol
+		int suma=0;
+		if(!arbol.arbolVacio()) {
+			suma+=arbol.raiz();
+			if(!arbol.hijoIzq().arbolVacio()) {
+				suma+=sumaValores(arbol.hijoIzq());
+			}
+			if(!arbol.hijoDer().arbolVacio()) {
+				suma+=sumaValores(arbol.hijoDer());
+
+			}
+
+		}
+		return suma;
+	}
+	public ConjuntoTDA examenGodio2(ABBTDA arbol,ColaPrioridadTDA cola) {
+		ConjuntoTDA resultado=new Conjunto();
+		resultado.inicializarConjunto();
+		ColaPrioridadTDA colaAux=new ColaPrioridad();
+		colaAux.inicializarColaPrioridad();
+		int elemento;
+		int ascendentes;
+		int descendientes;
+		while(!cola.colaVacia()) {
+			colaAux.acolarPrioridad(cola.primero(), cola.prioridad());
+			if(this.encontrarValorArbol(arbol, cola.primero()))
+				resultado.agregar(cola.primero());
+			cola.desacolar();		
+		}
+		while(!colaAux.colaVacia()) {
+			if(resultado.pertenece(colaAux.primero())) {
+				elemento=colaAux.primero();
+				ascendentes=this.profundidad(arbol, elemento);
+				descendientes=this.cantidadHijosArbol(arbol, elemento);
+				if(descendientes-ascendentes!=colaAux.prioridad())
+					resultado.sacar(elemento);
+			}
+			cola.acolarPrioridad(colaAux.primero(), colaAux.prioridad());
+			colaAux.desacolar();
+		}
+		return resultado;
+	}
+	public int cantidadHijosArbol(ABBTDA arbol,int nodo) {//devuelve la cantidad de hijos que tiene un nodo del arbol
+		int cant=0;
+		if(arbol.raiz()==nodo) 
+			cant=this.cantHojas(arbol);
+		
+		if(nodo>arbol.raiz())
+			cant=cantidadHijosArbol(arbol.hijoDer(),nodo);
+		if(nodo<arbol.raiz())
+			cant=cantidadHijosArbol(arbol.hijoIzq(),nodo);		
+
+		return cant;
+	}
 }

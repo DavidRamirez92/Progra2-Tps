@@ -1,5 +1,8 @@
 package misUtilidades;
 import misImplementaciones.estatico.Pila;
+import misApis.ColaTDA;
+import misApis.PilaTDA;
+import misImplementaciones.dinamico.Cola;
 import misImplementaciones.estatico.Conjunto;
 
 public class MetodosPila {
@@ -169,6 +172,27 @@ public class MetodosPila {
 		while(!aux.conjuntoVacio()) {
 		     p.apilar(aux.elegir());
 		}
+	}
+	
+	public boolean pilaCapicua(PilaTDA p) {//funciona, devuelve boolean si una pila es capicua o no
+		PilaTDA aux=new Pila();
+		aux.inicializarPila();
+		ColaTDA cola=new Cola();
+		cola.inicializarCola();
+		boolean capicua=true;
+		while(!p.pilaVacia()) {
+			aux.apilar(p.tope());
+			cola.acolar(p.tope());
+			p.desapilar();
+		}
+		while(!aux.pilaVacia()) {
+			if(aux.tope()!=cola.primero())
+				capicua=false;
+			aux.desapilar();
+			cola.desacolar();
+		}
+		return capicua;
+
 	}
 
 }

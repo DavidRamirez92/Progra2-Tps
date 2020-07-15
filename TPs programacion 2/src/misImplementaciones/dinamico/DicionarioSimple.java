@@ -16,7 +16,7 @@ class Nodo{
 	}
 	private Nodo posClave(int clave) {
 		Nodo aux=origen;
-		while(aux!=null&aux.clave!=clave) {
+		while(aux!=null&&aux.clave!=clave) {
 			aux=aux.sig;
 		}
 		return aux;
@@ -61,7 +61,7 @@ class Nodo{
 		claves.inicializarConjunto();
 		Nodo aux=origen;
 		while(aux!=null){
-			claves.agregar(aux.valor);
+			claves.agregar(aux.clave);
 			aux=aux.sig;
 		}
 		return claves;
